@@ -4,6 +4,9 @@ import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 
+import projet_d_option.Strategie;
+import projet_d_option.Structure;
+
 
 public class premier_modele {
 
@@ -11,115 +14,73 @@ public class premier_modele {
 	public static void main(String[] args) {
 		
 		Model model = new Model("Gestion des stocks");
+	
 		
+	// Données structure
+		int nbPatientsInitial = 1000;
+		int[] nbPatients = Structure.getNbPatients();
+		int consoPatient = 1; // Combien un patient consomme de boite de medicament par mois
+		int stockSecurite=3000;
+		int stockInitial=6000;
+		int lotCommande=3000; // Combien de boite de medicament arrive par commande
+		int delai=0; // délai entre le moment ou la commande est passé et le moment ou elle arrive
+		int pourcentageFluctuation=1; // Au mois suivant il y a une proportion aléatoire entre 0 et pourcentageFluctuation de patients de plus ou moins.
 		
-	// Objectif : proportion à faire passer au nouveau traitement
-		double proportion = 0.1;
+		Structure structure1 = new Structure(nbPatientsInitial, nbPatients, consoPatient, stockSecurite, stockInitial, lotCommande, delai, pourcentageFluctuation);
 		
+	// Données Strategie :
+		int pourcentage = 10; //pourcentage à faire passer au nouveau traitement
+		int duree = 24; // Durée en mois de la simulation		
+		int tempsEtapes = 1; // Durée entre chaque étape
+		int nbEtapes = 3; // Nombre d'étape pour atteindre le nouvel espacement
+		int nbGroupes = nbEtapes + 1; // nbGroupes = nbEtapes (car 1 étape = 1 mois) + 1 (groupe qui ne change pas de traitement)
 		
-	// Paramètres :
-		// Durée en mois
-		int duree = 6;
+		Strategie strategie1 = new Strategie(pourcentage, nbEtapes, tempsEtapes, duree, structure1);
 		
-		// Durée entre chaque étape
-		int tpEtape = 1; 
+		// Ces paramètres strategique determine la demande en medicaments des patients sur les 24 mois
+		int[][] demande = strategie1.getDemande();
 		
-		// Nombre d'étape pour atteindre le nouvel espacement
-		double nbEtapes = duree * tpEtape; 
+		// On somme ces demandes pour avoir la demande mensuelle;
+		int[] demandeMensuelle=new int[duree];
 		
-		// nbGroupes = nbEtapes (car 1 étape = 1 mois) + 1 (groupe qui ne change pas de traitement)
-		double nbGroupes = nbEtapes + 1;
-		
-		//double nbGroupes=  1/proportion;
-		int nbPatients = 1000;
-		int moisEspacement = 3;
-		
-		
-		
+		int demandeMoisI = 0;
+		for (int i=0; i<duree; i++) {
+			demandeMoisI = 0;
+			for (int j=0; j<nbGroupes; j++) {
+				demandeMoisI += demande[j][i];
+			}
+			demandeMensuelle[i]=demandeMoisI;
+		}
 		
 		//Variables 
-		IntVar[] stock = model.intVarArray("stock",24, 2000,100000);
-		IntVar[] appro = model.intVarArray("appro",stock.length,new int[] {0,3000});
-		IntVar[][] demande = model.intVarMatrix((int)nbGroupes, stock.length,0,3000);
-		IntVar[] demandeMensuelle = model.intVarArray("demandeMensuelle",stock.length,new int[] {0,50000});
+		IntVar[] stock = model.intVarArray("stock",duree, 0,100000);
+		IntVar[] appro = model.intVarArray("appro",duree,new int[] {0,lotCommande});
 		
 		
+		//Contraintes
+		
+		// Une commande est lancé dès que le stock passe en dessous du stock de sécurité
+		// Si le stock au mois i est inferieur à 3000 alors l'appro vaut 3000 sinon elle vaut 0
 		for(int j=0;j<nbGroupes;j++) {
 			for(int i=0;i<11+j;i++) {
-				model.arithm(demande[j][i], "=", (int)(nbPatients * proportion)).post();
-				BoolVar b1 = model.arithm(stock[i], "<=", 3000).reify();
+				BoolVar b1 = model.arithm(stock[i], "<=", stockSecurite).reify();
 				BoolVar b2 = model.arithm(appro[i], ">", 0).reify();
 				model.arithm(b1, "=", b2).post();
 			}
 		}
 		
-		for (int j = 0; j<nbGroupes; j++) {
-			switch (j % moisEspacement){
-				case 0: 
-					for (int i = 11+j; i < stock.length; i+=moisEspacement) {
-						model.arithm(demande[j][i], "=", (int)(nbPatients * proportion)*moisEspacement).post();
-						if (i+1<stock.length) {
-							model.arithm(demande[j][i+1], "=", 0).post();
-						}
-						if (i+2<stock.length) {
-							model.arithm(demande[j][i+2], "=", 0).post();
-						}
-						BoolVar b1 = model.arithm(stock[i], "<=", 3000).reify();
-						BoolVar b2 = model.arithm(appro[i], ">", 0).reify();
-						model.arithm(b1, "=", b2).post();
-					}
-				case 1:
-					for (int i = 11+j; i < stock.length; i+=moisEspacement) {
-						model.arithm(demande[j][i], "=", (int)(nbPatients * proportion)*moisEspacement).post();
-						if (i+1<stock.length) {
-							model.arithm(demande[j][i+1], "=", 0).post();
-						}
-						if (i+2<stock.length) {
-							model.arithm(demande[j][i+2], "=", 0).post();
-						}
-							BoolVar b1 = model.arithm(stock[i], "<=", 3000).reify();
-						BoolVar b2 = model.arithm(appro[i], ">", 0).reify();
-						model.arithm(b1, "=", b2).post();
-						
-					}
-				case 2:
-					for (int i = 11+j; i < stock.length; i+=moisEspacement) {
-						model.arithm(demande[j][i], "=", (int)(nbPatients * proportion)*moisEspacement).post();
-						if (i+1<stock.length) {
-							model.arithm(demande[j][i+1], "=", 0).post();
-						}
-						if (i+2<stock.length) {
-							model.arithm(demande[j][i+2], "=", 0).post();
-						}
-						BoolVar b1 = model.arithm(stock[i], "<=", 3000).reify();
-						BoolVar b2 = model.arithm(appro[i], ">", 0).reify();
-						model.arithm(b1, "=", b2).post();
-					}
-			}
-				
-		}
-		
-		//Contraintes
-		
-		// demande Mensuelle
-		int demandeMoisI = 0;
-		for (int i=0; i<stock.length; i++) {
-			demandeMoisI = 0;
-			for (int j=0; j<nbGroupes; j++) {
-				demandeMoisI += demande[j][i].getValue();
-			}
-			demandeMensuelle[i]=model.intVar(demandeMoisI);
-		}
-		
-		
 		//Stock initial
-		model.arithm(stock[0], "=", 6000).post();
+		model.arithm(stock[0], "=", stockInitial).post();
+		
+		// Evolution du stock au cours du temps : stock[i] = stock[i-1] + appro[i-1] - demandeMensuelle[i-1]
 		for(int i=1;i<stock.length;i++) {
-			
 			for (int j=0; j<nbGroupes; j++) {
-				model.scalar(new IntVar[] {stock[i-1],stock[i],appro[i-1],(demandeMensuelle[i-1])},new int[] {-1,1,-1,1 },"=", 0).post();
+				model.scalar(new IntVar[] {stock[i-1],stock[i],appro[i-1]},new int[] {-1,1,-1 },"=", demandeMensuelle[i-1]).post();
 			}
 		}
+		
+		
+		// Resolution et affichage des résultats
 		
 		Solution solution = model.getSolver().findSolution();
 		if(solution != null){
@@ -128,7 +89,7 @@ public class premier_modele {
 		    
 		    
 		    for(int i =0; i < stock.length; i++) {
-		    	System.out.println("appro necessaire au mois " + i + " :" + Math.max(0, demandeMensuelle[i].getValue()-stock[i].getValue()));
+		    	System.out.println("appro necessaire au mois " + i + " :" + Math.max(0, demandeMensuelle[i]-stock[i].getValue()));
 		    }
 		    
 		    System.out.println("");
@@ -139,11 +100,11 @@ public class premier_modele {
 		    	//System.out.println("Disponibilité au mois " + i + ": " + dispo[i]) ;
 		    	for(int i =0; i < stock.length; i++) {
 		    		//System.out.print("demande au mois " + i + " pour le groupe " + j +": " + demande[j][i] + "    ");
-		    		System.out.print(demande[j][i].getValue() + "    ");
+		    		System.out.print(demande[j][i] + "    ");
 		    	}
 		    	System.out.println("");
-		    	//System.out.println((nbPatients * proportion)*moisEspacement) ;
-		    	//System.out.println(nbPatients);
+		    	//System.out.println((nbPatientsInitialInitial * proportion)*moisEspacement) ;
+		    	//System.out.println(nbPatientsInitialInitial);
 		    	//System.out.println(proportion);
 		    	//System.out.println(moisEspacement) ;
 		    }
