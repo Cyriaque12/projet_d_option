@@ -25,7 +25,7 @@ public class premier_modele {
 		int tpEtape = 1; 
 		
 		// Nombre d'étape pour atteindre le nouvel espacement
-		double nbEtapes = duree * tpEtape; 
+		double nbEtapes = duree / tpEtape; 
 		
 		// nbGroupes = nbEtapes (car 1 étape = 1 mois) + 1 (groupe qui ne change pas de traitement)
 		double nbGroupes = nbEtapes + 1;
@@ -38,7 +38,7 @@ public class premier_modele {
 		
 		
 		//Variables 
-		IntVar[] stock = model.intVarArray("stock",24, 2000,100000);
+		IntVar[] stock = model.intVarArray("stock",duree, 2000,100000);
 		IntVar[] appro = model.intVarArray("appro",stock.length,new int[] {0,3000});
 		IntVar[][] demande = model.intVarMatrix((int)nbGroupes, stock.length,0,3000);
 		IntVar[] demandeMensuelle = model.intVarArray("demandeMensuelle",stock.length,new int[] {0,50000});

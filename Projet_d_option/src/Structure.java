@@ -1,4 +1,4 @@
-package projet_d_option;
+package Projet_d_option.src;
 
 import java.util.Random;
 
@@ -11,20 +11,36 @@ public class Structure {
 	public int stockInitial;
 	public int lotCommande;
 	public int delai;
-	public int duree;
 	public int pourcentageFluctuation;
+	public int[] stock;
+	
+	public int duree; // Dans Structure et Stratégie non ?
 	
 	
+	public int getPourcentageFluctuation() {
+		return pourcentageFluctuation;
+	}
+
+	public int[] getStock() {
+		return stock;
+	}
+
+	public int getDuree() {
+		return duree;
+	}
+
 	public Structure(int nbPatientsInitial, int[] nbPatients, int consoPatient, int stockSecurite, int stockInitial, int lotCommande,
-			int delai, int pourcentageFluctuation) {
+			int delai, int pourcentageFluctuation, int duree) {
 		this.nbPatientsInitial = nbPatientsInitial;
-		this.nbPatients = nbPatients;
+		this.duree = duree;
+		this.nbPatients = new int[duree];
 		this.consoPatient = consoPatient;
 		this.stockSecurite = stockSecurite;
 		this.stockInitial = stockInitial;
 		this.lotCommande = lotCommande;
 		this.delai = delai;
 		this.pourcentageFluctuation = pourcentageFluctuation;
+		this.stock = new int[duree];
 		
 	}
 

@@ -1,4 +1,4 @@
-package projet_d_option;
+package Projet_d_option.src;
 
 import org.chocosolver.solver.variables.BoolVar;
 
@@ -80,43 +80,43 @@ public class Strategie {
 		}
 		
 		for(int j=1;j<nbGroupes;j++) {
-			for(int i=0;i<11+j;i++) {
+			for(int i=0;i<11+j-1;i++) {
 				demande[j][i]= (1-(pourcentage/100))*structure.getNbPatients()[i]*structure.getConsoPatient()/(nbGroupes-1);
 			}
 		}
 		
-		for (int j = 0; j<nbGroupes; j++) {
-			switch (j % moisEspacement){
-				case 0: 
-					for (int i = 11+j; i < structure.getStock().length; i+=moisEspacement) {
-						// Je me suis arreté la, je reprendrai.
-						model.arithm(demande[j][i], "=", (int)(nbPatients * proportion)*moisEspacement).post();
-						if (i+1<stock.length) {
-							model.arithm(demande[j][i+1], "=", 0).post();
+		for (int j = 1; j<nbGroupes; j++) {
+			//switch (j % moisEspacement){
+				//case 1: 
+					for (int i = 11+j-1; i < structure.getStock().length; i+=moisEspacement) {
+						demande[j][i], "=", structure.getNbPatients[i] * (this.pourcentage/100))*moisEspacement);
+						if (i+1 < structure.getStock().length) {
+							demande[j][i+1] = 0;
 						}
-						if (i+2<stock.length) {
-							model.arithm(demande[j][i+2], "=", 0).post();
+						if (i+2 < structure.getStock().length) {
+							demande[j][i+2] = 0;
 						}
-						BoolVar b1 = model.arithm(stock[i], "<=", 3000).reify();
-						BoolVar b2 = model.arithm(appro[i], ">", 0).reify();
-						model.arithm(b1, "=", b2).post();
+						if (structure.getStock()[i] < structure.getStockSecurite()) {
+							appro[i] = structure.getLotCommande();
+							if (i+2 < structure.getStock().length) {
+						}
 					}
-				case 1:
-					for (int i = 11+j; i < stock.length; i+=moisEspacement) {
-						model.arithm(demande[j][i], "=", (int)(nbPatients * proportion)*moisEspacement).post();
-						if (i+1<stock.length) {
-							model.arithm(demande[j][i+1], "=", 0).post();
+/*				case 2:
+					for (int i = 11+j-1; i < structure.getStock().length; i+=moisEspacement) {
+						demande[j][i], "=", structure.getNbPatients[i] * (this.pourcentage/100))*moisEspacement);
+						if (i+1 < structure.getStock().length) {
+							demande[j][i+1] = 0;
 						}
-						if (i+2<stock.length) {
-							model.arithm(demande[j][i+2], "=", 0).post();
+						if (i+2 < structure.getStock().length) {
+							demande[j][i+2] = 0;
 						}
-							BoolVar b1 = model.arithm(stock[i], "<=", 3000).reify();
-						BoolVar b2 = model.arithm(appro[i], ">", 0).reify();
-						model.arithm(b1, "=", b2).post();
-						
+						if (structure.getStock()[i] < structure.getStockSecurite()) {
+							appro[i] = structure.getLotCommande();
+						}
 					}
-				case 2:
-					for (int i = 11+j; i < stock.length; i+=moisEspacement) {
+
+				case 0:
+					for (int i = 11+j-1; i < stock.length; i+=moisEspacement) {
 						model.arithm(demande[j][i], "=", (int)(nbPatients * proportion)*moisEspacement).post();
 						if (i+1<stock.length) {
 							model.arithm(demande[j][i+1], "=", 0).post();
@@ -129,7 +129,7 @@ public class Strategie {
 						model.arithm(b1, "=", b2).post();
 					}
 			}
-				
+	*/			
 		}
 		
 		
