@@ -14,7 +14,12 @@ public class Strategie {
 	
 	
 	
-	public Strategie(int pourcentage, int nbEtapes, int tempsEtapes, int duree, Structure structure, int moisEspacement) {
+	public Strategie(int pourcentage, 
+					int nbEtapes, 
+					int tempsEtapes, 
+					int duree, 
+					Structure structure, 
+					int moisEspacement) {
 		this.pourcentage = pourcentage;
 		this.nbEtapes = nbEtapes;
 		this.duree = duree;
@@ -88,17 +93,13 @@ public class Strategie {
 		for (int j = 1; j<nbGroupes; j++) {
 			//switch (j % moisEspacement){
 				//case 1: 
-					for (int i = 11+j-1; i < structure.getStock().length; i+=moisEspacement) {
-						demande[j][i], "=", structure.getNbPatients[i] * (this.pourcentage/100))*moisEspacement);
-						if (i+1 < structure.getStock().length) {
+					for (int i = 11+j-1; i < structure.getDuree(); i+=moisEspacement) {
+						demande[j][i] = structure.getNbPatients()[i] * (this.pourcentage/100)*moisEspacement;
+						if (i+1 < duree) {
 							demande[j][i+1] = 0;
 						}
-						if (i+2 < structure.getStock().length) {
+						if (i+2 < duree) {
 							demande[j][i+2] = 0;
-						}
-						if (structure.getStock()[i] < structure.getStockSecurite()) {
-							appro[i] = structure.getLotCommande();
-							if (i+2 < structure.getStock().length) {
 						}
 					}
 /*				case 2:
@@ -109,9 +110,6 @@ public class Strategie {
 						}
 						if (i+2 < structure.getStock().length) {
 							demande[j][i+2] = 0;
-						}
-						if (structure.getStock()[i] < structure.getStockSecurite()) {
-							appro[i] = structure.getLotCommande();
 						}
 					}
 
@@ -124,9 +122,6 @@ public class Strategie {
 						if (i+2<stock.length) {
 							model.arithm(demande[j][i+2], "=", 0).post();
 						}
-						BoolVar b1 = model.arithm(stock[i], "<=", 3000).reify();
-						BoolVar b2 = model.arithm(appro[i], ">", 0).reify();
-						model.arithm(b1, "=", b2).post();
 					}
 			}
 	*/			

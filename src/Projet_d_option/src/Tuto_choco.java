@@ -1,3 +1,4 @@
+package Projet_d_option.src;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.variables.IntVar;
