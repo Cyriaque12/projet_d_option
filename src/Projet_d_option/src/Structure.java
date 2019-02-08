@@ -13,13 +13,12 @@ public class Structure {
 	public int delai;
 	public int pourcentageFluctuation;
 	
-	public int duree; // Dans Structure et Stratégie non ?
+	public int duree;
 	
 	
 	
 
-	public Structure(int nbPatientsInitial, 
-					int[] nbPatients, 
+	public Structure(int nbPatientsInitial,
 					int consoPatient, 
 					int stockSecurite, 
 					int stockInitial, 
@@ -36,7 +35,8 @@ public class Structure {
 		this.lotCommande = lotCommande;
 		this.delai = delai;
 		this.pourcentageFluctuation = pourcentageFluctuation;
-		this.nbPatients = nbPatients;
+		
+		this.nbPatients = this.generateNbPatient();
 		
 	}
 
@@ -45,10 +45,12 @@ public class Structure {
 	}
 
 	
-	public int[] getNbPatients() {
-		/*nbPatients[0] = nbPatientsInitial;
-		for (int i = 0; i<duree; i++) {
-			int fluctuation = (int)(Math.random()*nbPatients[i-1]*pourcentageFluctuation/100);
+	public int[] generateNbPatient() {
+		int [] nbPatients = new int[this.getDuree()];
+		int nbPatientsInitial = this.getNbPatientsInitial();
+		nbPatients[0] = nbPatientsInitial;
+		for (int i = 1; i<duree; i++) {
+			int fluctuation = (int)(Math.random()*nbPatients[i-1]*this.getPourcentageFluctuation()/100);
 			double rd = Math.random();
 			int signe;
 			rd = rd-0.5;
@@ -65,8 +67,12 @@ public class Structure {
 				}
 			}
 			nbPatients[i] = nbPatients[i-1] + fluctuation*signe ; 
-		}*/
+		}
 		return nbPatients;
+	}
+	
+	public int[] getNbPatients() {
+		return this.nbPatients;
 	}
 
 

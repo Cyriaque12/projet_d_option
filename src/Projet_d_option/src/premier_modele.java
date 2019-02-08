@@ -23,37 +23,11 @@ public class premier_modele {
 		int stockInitial=6000;
 		int duree = 24; // Durée en mois de la simulation
 		int lotCommande=3000; // Combien de boite de medicament arrive par commande
-		int delai=0; // délai entre le moment ou la commande est passé et le moment ou elle arrive
+		int delai = 0; // délai entre le moment ou la commande est passé et le moment ou elle arrive
 		int pourcentageFluctuation=1; // Au mois suivant il y a une proportion aléatoire entre 0 et pourcentageFluctuation de patients de plus ou moins.
 		
-		int[] nbPatients = new int[duree];
-		nbPatients[0] = nbPatientsInitial;
-		for (int i = 1; i<duree; i++) {
-			int fluctuation = (int)(Math.random()*nbPatients[i-1]*pourcentageFluctuation/100);
-			double rd = Math.random();
-			int signe;
-			rd = rd-0.5;
-			
-			if (rd <0 ) {
-				signe = -1;
-			}
-			else {
-				if (rd > 0) {
-					signe = 1;
-				}
-				else {
-					signe = 0;
-				}
-			}
-			nbPatients[i] = nbPatients[i-1] + fluctuation*signe ; 
-		}
-			
-			
 		
-		
-		
-		Structure structure1 = new Structure(nbPatientsInitial, 
-											nbPatients, 
+		Structure structure1 = new Structure(nbPatientsInitial,
 											consoPatient, 
 											stockSecurite, 
 											stockInitial, 

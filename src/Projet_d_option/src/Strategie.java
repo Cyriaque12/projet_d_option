@@ -94,7 +94,7 @@ public class Strategie {
 			//switch (j % moisEspacement){
 				//case 1: 
 					for (int i = 11+j-1; i < structure.getDuree(); i+=moisEspacement) {
-						demande[j][i] = structure.getNbPatients()[i] * (this.pourcentage/100)*moisEspacement;
+						demande[j][i]= moisEspacement * (1-(pourcentage/100))*structure.getNbPatients()[i]*structure.getConsoPatient()/(nbGroupes-1);
 						if (i+1 < duree) {
 							demande[j][i+1] = 0;
 						}
@@ -102,32 +102,7 @@ public class Strategie {
 							demande[j][i+2] = 0;
 						}
 					}
-/*				case 2:
-					for (int i = 11+j-1; i < structure.getStock().length; i+=moisEspacement) {
-						demande[j][i], "=", structure.getNbPatients[i] * (this.pourcentage/100))*moisEspacement);
-						if (i+1 < structure.getStock().length) {
-							demande[j][i+1] = 0;
-						}
-						if (i+2 < structure.getStock().length) {
-							demande[j][i+2] = 0;
-						}
-					}
-
-				case 0:
-					for (int i = 11+j-1; i < stock.length; i+=moisEspacement) {
-						model.arithm(demande[j][i], "=", (int)(nbPatients * proportion)*moisEspacement).post();
-						if (i+1<stock.length) {
-							model.arithm(demande[j][i+1], "=", 0).post();
-						}
-						if (i+2<stock.length) {
-							model.arithm(demande[j][i+2], "=", 0).post();
-						}
-					}
-			}
-	*/			
 		}
-		
-		
 		return demande;
 	}
 	
