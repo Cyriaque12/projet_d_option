@@ -14,6 +14,24 @@ import org.chocosolver.solver.variables.IntVar;
 
 public class premier_modele {
 
+	public static void creationCsv(String nomFichier, int delai, IntVar[] stock, int duree, IntVar[] commande) throws IOException {
+		File ff = new File("C:\\Users\\Lucas\\Documents\\Mines\\A3\\Projet d'Option\\ExportEclipse\\" + nomFichier + ".csv");
+		   PrintWriter out;
+		   out = new PrintWriter(new FileWriter(ff));
+		   String st = "";
+		   out.write("Mois;Stock");
+		   out.println();
+		    
+		   for(int i=0; i<delai; i++) {
+			   out.write(i+1 +";" + stock[i].getValue());
+			   out.println();
+		   }
+	       for (int i =delai; i<duree; i++) {
+	    	   out.write(i+1 + ";" + (stock[i].getValue() + commande[i-delai].getValue()));
+	    	   out.println();
+	       }
+	        out.close();
+	}
 	
 	public static void main(String[] args) throws IOException {
 		
@@ -126,7 +144,7 @@ public class premier_modele {
 		    */
 		    
 		    
-		   File ff = new File("C:\\Users\\Lucas\\Documents\\Mines\\A3\\Projet d'Option\\ExportEclipse\\fichier.csv");
+		  /* File ff = new File("C:\\Users\\Lucas\\Documents\\Mines\\A3\\Projet d'Option\\ExportEclipse\\fichier.csv");
 		   PrintWriter out;
 		   out = new PrintWriter(new FileWriter(ff));
 		   String st = "";
@@ -142,8 +160,10 @@ public class premier_modele {
 	    	   out.println();
 	       }
 	        out.close();
-		   
-	        
+		   */
+	        String nomFichier = "fichier";
+		    creationCsv(nomFichier, delai, stock, duree, commande);
+		    
 		}else {
 			System.out.println("pas de solution");
 		}
