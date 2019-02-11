@@ -91,8 +91,8 @@ public class Strategie {
 		}
 		
 		for (int j = 1; j<nbGroupes; j++) {
-			//switch (j % moisEspacement){
-				//case 1: 
+			switch (moisEspacement){
+				case 3: 
 					for (int i = 11+j-1; i < structure.getDuree(); i+=moisEspacement) {
 						demande[j][i]= moisEspacement * (int)((pourcentagePassageTotal/100)*structure.getNbPatients()[i]*structure.getConsoPatient()/(nbGroupes-1));
 						if (i+1 < duree) {
@@ -102,6 +102,26 @@ public class Strategie {
 							demande[j][i+2] = 0;
 						}
 					}
+				case 6:
+					for (int i = 11+j-1; i < structure.getDuree(); i+=moisEspacement) {
+						demande[j][i]= moisEspacement * (int)((pourcentagePassageTotal/100)*structure.getNbPatients()[i]*structure.getConsoPatient()/(nbGroupes-1));
+						if (i+1 < duree) {
+							demande[j][i+1] = 0;
+						}
+						if (i+2 < duree) {
+							demande[j][i+2] = 0;
+						}
+						if (i+3 < duree) {
+							demande[j][i+2] = 0;
+						}
+						if (i+4 < duree) {
+							demande[j][i+2] = 0;
+						}
+						if (i+5 < duree) {
+							demande[j][i+2] = 0;
+						}
+					}
+			}
 		}
 		return demande;
 	}
