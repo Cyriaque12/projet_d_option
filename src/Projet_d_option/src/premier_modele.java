@@ -3,16 +3,14 @@ import java.io.FileWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
-
-
-
-
 
 public class premier_modele {
 
@@ -35,7 +33,6 @@ public class premier_modele {
 		int lotCommande=3000; // Combien de boite de medicament arrive par commande
 		int delai = 1; // délai entre le moment ou la commande est passé et le moment ou elle arrive
 		int pourcentageFluctuation=0; // Au mois suivant il y a une proportion aléatoire entre 0 et pourcentageFluctuation de patients de plus ou moins.
-		
 		
 		Structure structure1 = new Structure(nbPatientsInitial,
 											consoPatient, 
@@ -88,13 +85,14 @@ public class premier_modele {
 			
 	
 	// Données Strategie :
-		double pourcentage = 90; //pourcentage à faire passer au nouveau traitement
+		double pourcentagePassageTotal = 90; //pourcentage à faire passer au nouveau traitement
+		double pourcentagePassageMensuel = 10;
 		int tempsEtapes = 1; // Durée entre chaque étape
-		int nbEtapes = 9; // Nombre d'étape pour atteindre le nouvel espacement
+		int nbEtapes = (int)(pourcentagePassageTotal / pourcentagePassageMensuel); // Nombre d'étape pour atteindre le nouvel espacement
 		int nbGroupes = nbEtapes + 1; // nbGroupes = nbEtapes (car 1 étape = 1 mois) + 1 (groupe qui ne change pas de traitement)
 		int moisEspacement = 3;
 		
-		Strategie strategie1 = new Strategie(pourcentage, nbEtapes, tempsEtapes, duree, structure1, moisEspacement);
+		Strategie strategie1 = new Strategie(pourcentagePassageTotal, nbEtapes, tempsEtapes, duree, structure1, moisEspacement);
 		
 		// Ces paramètres strategique determine la demande en medicaments des patients sur les 24 mois
 		int[][] demande = strategie1.getDemande();
@@ -119,7 +117,7 @@ public class premier_modele {
 		
 		
 		//Contraintes
-		
+
 		// Une commande est lancé dès que le stock passe en dessous du stock de sécurité
 		// Si le stock au mois i est inferieur à lotCommande alors l'appro vaut lot commande sinon elle vaut 0
 			for(int i=0;i<duree-delai;i++) {
@@ -163,9 +161,9 @@ public class premier_modele {
 		    }
 		    
 		    /* Tests
-		    System.out.println(moisEspacement * (int)((1-(pourcentage/100))*(double)(structure1.getNbPatients()[3]*structure1.getConsoPatient())/(nbGroupes-1)));
+		    System.out.println(moisEspacement * (int)((1-(pourcentagePassageTotal/100))*(double)(structure1.getNbPatients()[3]*structure1.getConsoPatient())/(nbGroupes-1)));
 		    System.out.println(moisEspacement);
-		    System.out.println((pourcentage/100));
+		    System.out.println((pourcentagePassageTotal/100));
 		    System.out.println(structure1.getNbPatients()[3]);
 		    System.out.println(structure1.getConsoPatient());
 		    System.out.println(structure1.getNbPatients()[3]*structure1.getConsoPatient()/(nbGroupes-1));
