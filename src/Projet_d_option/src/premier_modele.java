@@ -27,10 +27,10 @@ public class premier_modele {
 		int consoPatient = 1; // Combien un patient consomme de boite de medicament par mois
 		int stockSecurite=3000;
 		int stockInitial=6000;
-		int duree = 24; // Durée en mois de la simulation
+		int duree = 36; // Durée en mois de la simulation
 		int lotCommande=3000; // Combien de boite de medicament arrive par commande
 		int delai = 1; // délai entre le moment ou la commande est passé et le moment ou elle arrive
-		int pourcentageFluctuation=1; // Au mois suivant il y a une proportion aléatoire entre 0 et pourcentageFluctuation de patients de plus ou moins.
+		int pourcentageFluctuation=0; // Au mois suivant il y a une proportion aléatoire entre 0 et pourcentageFluctuation de patients de plus ou moins.
 		
 		
 		Structure structure1 = new Structure(nbPatientsInitial,
@@ -43,10 +43,9 @@ public class premier_modele {
 											duree);
 		
 	// Données Strategie :
-		double pourcentage = 10; //pourcentage à faire passer au nouveau traitement
-		// int duree = 24; // Durée en mois de la simulation		
+		double pourcentage = 90; //pourcentage à faire passer au nouveau traitement
 		int tempsEtapes = 1; // Durée entre chaque étape
-		int nbEtapes = 5; // Nombre d'étape pour atteindre le nouvel espacement
+		int nbEtapes = 9; // Nombre d'étape pour atteindre le nouvel espacement
 		int nbGroupes = nbEtapes + 1; // nbGroupes = nbEtapes (car 1 étape = 1 mois) + 1 (groupe qui ne change pas de traitement)
 		int moisEspacement = 3;
 		
@@ -107,9 +106,7 @@ public class premier_modele {
 		    
 		    for(int i =0; i < duree-delai; i++) {
 		    	System.out.println("Dispo au mois " + i + " :" + (stock[i+delai].getValue() + commande[i].getValue()));
-		    }
-		    
-		    
+		    }		    
 		    System.out.println("");
 		    System.out.println("");
 		    
@@ -119,8 +116,19 @@ public class premier_modele {
 		    	}
 		    	System.out.println("");		    
 		    }
-		   
-		   File ff = new File("C:\\Users\\Lucas\\Documents\\Mines\\A3\\Projet d'Option\\ExportEclipse\\fichier.txt");
+		    
+		    /* Tests
+		    System.out.println(moisEspacement * (int)((1-(pourcentage/100))*(double)(structure1.getNbPatients()[3]*structure1.getConsoPatient())/(nbGroupes-1)));
+		    System.out.println(moisEspacement);
+		    System.out.println((pourcentage/100));
+		    System.out.println(structure1.getNbPatients()[3]);
+		    System.out.println(structure1.getConsoPatient());
+		    System.out.println(structure1.getNbPatients()[3]*structure1.getConsoPatient()/(nbGroupes-1));
+		    
+		    */
+		    
+		    
+		   File ff = new File("C:\\Users\\Lucas\\Documents\\Mines\\A3\\Projet d'Option\\ExportEclipse\\fichier.csv");
 		   PrintWriter out;
 		   out = new PrintWriter(new FileWriter(ff));
 		   String st = "";

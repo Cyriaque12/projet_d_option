@@ -3,7 +3,7 @@ package Projet_d_option.src;
 import org.chocosolver.solver.variables.BoolVar;
 
 public class Strategie {
-	public double pourcentage;
+	public double pourcentagePassageTotal;
 	public int nbEtapes;
 	public int tempsEtapes;
 	public int[][] demande;
@@ -14,13 +14,13 @@ public class Strategie {
 	
 	
 	
-	public Strategie(double pourcentage, 
+	public Strategie(double pourcentagePassageTotal, 
 					int nbEtapes, 
 					int tempsEtapes, 
 					int duree, 
 					Structure structure, 
 					int moisEspacement) {
-		this.pourcentage = pourcentage;
+		this.pourcentagePassageTotal = pourcentagePassageTotal;
 		this.nbEtapes = nbEtapes;
 		this.duree = duree;
 		this.tempsEtapes = tempsEtapes;
@@ -61,8 +61,8 @@ public class Strategie {
 
 
 
-	public double getPourcentage() {
-		return pourcentage;
+	public double getpourcentagePassageTotal() {
+		return pourcentagePassageTotal;
 	}
 
 
@@ -81,12 +81,12 @@ public class Strategie {
 
 	public int[][] getDemande() {
 		for (int i = 0; i<this.duree; i++) {
-			demande[0][i] = (int)((1-(pourcentage/100))*structure.getNbPatients()[i]*structure.getConsoPatient());					
+			demande[0][i] = (int)((1-(pourcentagePassageTotal/100))*structure.getNbPatients()[i]*structure.getConsoPatient());					
 		}
 		
 		for(int j=1;j<nbGroupes;j++) {
 			for(int i=0;i<11+j-1;i++) {
-				demande[j][i]= (int)(((pourcentage/100))*structure.getNbPatients()[i]*structure.getConsoPatient()/(nbGroupes-1));
+				demande[j][i]= (int)(((pourcentagePassageTotal/100))*structure.getNbPatients()[i]*structure.getConsoPatient()/(nbGroupes-1));
 			}
 		}
 		
@@ -94,7 +94,7 @@ public class Strategie {
 			//switch (j % moisEspacement){
 				//case 1: 
 					for (int i = 11+j-1; i < structure.getDuree(); i+=moisEspacement) {
-						demande[j][i]= moisEspacement * (int)((1-(pourcentage/100))*structure.getNbPatients()[i]*structure.getConsoPatient()/(nbGroupes-1));
+						demande[j][i]= moisEspacement * (int)((pourcentagePassageTotal/100)*structure.getNbPatients()[i]*structure.getConsoPatient()/(nbGroupes-1));
 						if (i+1 < duree) {
 							demande[j][i+1] = 0;
 						}
