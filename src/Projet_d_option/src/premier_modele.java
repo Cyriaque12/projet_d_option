@@ -115,18 +115,41 @@ public class premier_modele {
 	
 	
 
-	/*public static void creationCsvIndicateurs(String nomFichier, List<Strategie>)throws IOException {
+	public static void creationCsvIndicateurs(String nomFichier, 
+												List<Strategie> strategies,
+												int delai, 
+												IntVar[] stock, 
+												int duree, 
+												IntVar[] commande) throws IOException {
+		
 		File ff = new File("C:\\Users\\Lucas\\Documents\\Mines\\A3\\Projet d'Option\\ExportEclipse\\" + nomFichier + ".csv");
-		   PrintWriter out;
-		   out = new PrintWriter(new FileWriter(ff));
-		   String st = "";
-		   out.write("Mois;Stock");
-		   out.println();
-	       out.close();
+		PrintWriter out;
+		out = new PrintWriter(new FileWriter(ff));
+		out.write("Strategies;");
+		List <Quartet<String, Integer, Integer, Integer>> indicateurs = indicateurs(strategies.get(0), stock, commande);
+		for (Quartet i : indicateurs) {
+			out.write("" + i.getValue(0)+ " avant la transition;"+ i.getValue(0) + " pendant la transition;" + i.getValue(0) + " apres la transition;");
+		}
+		out.println();
+		for (Strategie s : strategies) {
+			indicateurs = indicateurs(s, stock, commande);
+			out.write(s.getNomStrategie());
+			
+			for (Quartet i : indicateurs) {
+				for (int index = 1; index < i.getSize(); index ++) {
+					out.write("" + i.getValue(index) + ";");
+				}
+			}
+			out.println();
+		}
+			
+			
+			out.println();
+			out.close();
 	}
 
 		
-		*/
+		
 		
 
 	public static void resoudStock(Strategie strategie1) throws IOException  {
@@ -216,23 +239,7 @@ public class premier_modele {
 		    */
 		    
 		    
-		  /* File ff = new File("C:\\Users\\Lucas\\Documents\\Mines\\A3\\Projet d'Option\\ExportEclipse\\fichier.csv");
-		   PrintWriter out;
-		   out = new PrintWriter(new FileWriter(ff));
-		   String st = "";
-		   out.write("Mois;Stock");
-		   out.println();
-		    
-		   for(int i=0; i<delai; i++) {
-			   out.write(i+1 +";" + stock[i].getValue());
-			   out.println();
-		   }
-	       for (int i =delai; i<duree; i++) {
-	    	   out.write(i+1 + ";" + (stock[i].getValue() + commande[i-delai].getValue()));
-	    	   out.println();
-	       }
-	        out.close();
-		   */
+		 
 	        String nomFichier = "fichier";
 	        creationCsv(nomFichier, delai, stock, duree, commande);
 		    
@@ -294,7 +301,7 @@ public class premier_modele {
 		int nbGroupes = nbEtapes + 1; // nbGroupes = nbEtapes (car 1 étape = 1 mois) + 1 (groupe qui ne change pas de traitement)
 		int moisEspacement = 3;
 		
-		Strategie strategie1 = new Strategie(pourcentagePassageTotal, nbEtapes, tempsEtapes, duree, structure1, moisEspacement);
+		Strategie strategie1 = new Strategie(pourcentagePassageTotal, nbEtapes, tempsEtapes, duree, structure1, moisEspacement, "StrategieA2");
 		
 		resoudStock(strategie1);
 		

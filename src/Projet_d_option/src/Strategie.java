@@ -11,6 +11,7 @@ public class Strategie {
 	public int duree;
 	public Structure structure;
 	public int moisEspacement;
+	public String nomStrategie;
 	
 	
 	
@@ -19,7 +20,7 @@ public class Strategie {
 					int tempsEtapes, 
 					int duree, 
 					Structure structure, 
-					int moisEspacement) {
+					int moisEspacement, String nomStrategie) {
 		this.pourcentagePassageTotal = pourcentagePassageTotal;
 		this.nbEtapes = nbEtapes;
 		this.duree = duree;
@@ -28,9 +29,24 @@ public class Strategie {
 		this.demande = new int[nbGroupes][duree];
 		this.structure = structure;
 		this.moisEspacement = moisEspacement;
+		this.nomStrategie = nomStrategie;
 	}
 
 	
+
+
+	public double getPourcentagePassageTotal() {
+		return pourcentagePassageTotal;
+	}
+
+
+
+
+	public String getNomStrategie() {
+		return nomStrategie;
+	}
+
+
 
 
 	public int getNbGroupes() {
