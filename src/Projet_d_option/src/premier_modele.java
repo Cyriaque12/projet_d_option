@@ -91,14 +91,13 @@ public class premier_modele {
 	   	}
 	    
 	    	// PENDANT
-	    int dureePendant = strategie.getNbEtapes()*strategie.getTempsEtapes();
 	    int sommeDesDifferencesPendant = 0;
 		for(int i=12; i<dateFinTransition + 1; i++) {
 			sommeDesDifferencesPendant += stock[i].getValue() + commande[i-strategie.getStructure().getDelai()].getValue() - stockSecu;
 		}
 		
 			// APRES
-		int dureeApres = dureeTotale - dureePendant - dureeAvant; 
+		int dureeApres = dureeTotale - dureeTransition - dureeAvant; 
 		int sommeDesDifferencesApres = 0;
 	    for (int i = dateFinTransition + 1; i<dureeTotale; i++) {
 	    	sommeDesDifferencesApres += stock[i].getValue() + commande[i-strategie.getStructure().getDelai()].getValue() - stockSecu;
@@ -106,14 +105,9 @@ public class premier_modele {
 	    	
 		indic.set(0, new Quartet<>("Stock Maximum", stockMaxAvant, stockMaxPendant, stockMaxApres));
 		indic.set(1, new Quartet<>("Nombre de Commande pendant la periode", nbCommandeAvant, nbCommandePendant, nbCommandeApres));
-		indic.set(2, new Quartet<>("Duree de la periode", dureeAvant, dureePendant, dureeApres));
-		indic.set(3, new Quartet<>("Somme des Rapports difference(Max-secu) / Duree de la periode", (int)((double)(sommeDesDifferencesAvant)/(double)(dureeAvant)), (int)((double)(sommeDesDifferencesPendant)/(double)(dureePendant)), (int)((double)(sommeDesDifferencesApres)/(double)(dureeApres))));
-		indic.set(4, new Quartet<>("Somme des Rapports difference(Max-secu) / Duree de la periode", (int)((double)(nbCommandeAvant)/(double)(dureeAvant)), (int)((double)(nbCommandePendant)/(double)(dureePendant)), (int)((double)(nbCommandeApres)/(double)(dureeApres))));
-		
-		
-		
-		
-		
+		indic.set(2, new Quartet<>("Duree de la periode", dureeAvant, dureeTransition, dureeApres));
+		indic.set(3, new Quartet<>("Somme des Rapports difference(Max-secu) / Duree de la periode", (int)((double)(sommeDesDifferencesAvant)/(double)(dureeAvant)), (int)((double)(sommeDesDifferencesPendant)/(double)(dureeTransition)), (int)((double)(sommeDesDifferencesApres)/(double)(dureeApres))));
+		indic.set(4, new Quartet<>("Somme des Rapports difference(Max-secu) / Duree de la periode", (int)((double)(nbCommandeAvant)/(double)(dureeAvant)), (int)((double)(nbCommandePendant)/(double)(dureeTransition)), (int)((double)(nbCommandeApres)/(double)(dureeApres))));		
 		
 		return indic;
 	}
@@ -121,103 +115,29 @@ public class premier_modele {
 	
 	
 
-	public static void creationCsv(String nomFichier, int delai, IntVar[] stock, int duree, IntVar[] commande) throws IOException {
+	/*public static void creationCsvIndicateurs(String nomFichier, List<Strategie>)throws IOException {
 		File ff = new File("C:\\Users\\Lucas\\Documents\\Mines\\A3\\Projet d'Option\\ExportEclipse\\" + nomFichier + ".csv");
 		   PrintWriter out;
 		   out = new PrintWriter(new FileWriter(ff));
 		   String st = "";
 		   out.write("Mois;Stock");
 		   out.println();
-		   
-		   for(int i=0; i<delai; i++) {
-			   out.write(i+1 +";" + stock[i].getValue());
-			   out.println();
-		   }
-	       for (int i =delai; i<duree; i++) {
-	    	   out.write(i+1 + ";" + (stock[i].getValue() + commande[i-delai].getValue()));
-	    	   out.println();
-	       }
-	        out.close();
+	       out.close();
 	}
-	
-	public static void main(String[] args) throws IOException {
+
 		
+		*/
 		
-		
-		
-		
+
+	public static void resoudStock(Strategie strategie1) throws IOException  {
 		Model model = new Model("Gestion des stocks");
-	
+		int duree=strategie1.getStructure().getDuree();
+		int delai=strategie1.getStructure().getDelai();
+		int lotCommande=strategie1.getStructure().getLotCommande();
+		int stockSecurite=strategie1.getStructure().getStockSecurite();
+		int stockInitial=strategie1.getStructure().getStockInitial();
+		int nbGroupes=strategie1.getNbGroupes();
 		
-	// Données structure1
-		int nbPatientsInitial = 1000;
-		int consoPatient = 1; // Combien un patient consomme de boite de medicament par mois
-		int stockSecurite=3000;
-		int stockInitial=6000;
-		int duree = 36; // Durée en mois de la simulation
-		int lotCommande=3000; // Combien de boite de medicament arrive par commande
-		int delai = 1; // délai entre le moment ou la commande est passé et le moment ou elle arrive
-		int pourcentageFluctuation=0; // Au mois suivant il y a une proportion aléatoire entre 0 et pourcentageFluctuation de patients de plus ou moins.
-		
-		Structure structure1 = new Structure(nbPatientsInitial,
-											consoPatient, 
-											stockSecurite, 
-											stockInitial, 
-											lotCommande, 
-											delai, 
-											pourcentageFluctuation,
-											duree);
-	
-	// Données structure2
-			int nbPatientsInitial2 = 1000;
-			int consoPatient2 = 1; // Combien un patient consomme de boite de medicament par mois
-			int stockSecurite2=3000;
-			int stockInitial2=6000;
-			int duree2 = 36; // Durée en mois de la simulation
-			int lotCommande2=3000; // Combien de boite de medicament arrive par commande
-			int delai2 = 1; // délai entre le moment ou la commande est passé et le moment ou elle arrive
-			int pourcentageFluctuation2=0; // Au mois suivant il y a une proportion aléatoire entre 0 et pourcentageFluctuation de patients de plus ou moins.
-			
-			
-			Structure structure2 = new Structure(nbPatientsInitial2,
-												consoPatient2, 
-												stockSecurite2, 
-												stockInitial2, 
-												lotCommande2, 
-												delai2, 
-												pourcentageFluctuation2,
-												duree2);
-	
-			
-		// Données dépot
-		int nbPatientsInitialDepot = nbPatientsInitial+nbPatientsInitial2;
-		int consoPatientDepot = 1; // Combien un patient consomme de boite de medicament par mois
-		int stockSecuriteDepot=3000;
-		int stockInitialDepot=6000;
-		int lotCommandeDepot=3000; // Combien de boite de medicament arrive par commande
-		int delaiDepot = 1; // délai entre le moment ou la commande est passé et le moment ou elle arrive
-		int pourcentageFluctuationDepot=0; // Au mois suivant il y a une proportion aléatoire entre 0 et pourcentageFluctuation de patients de plus ou moins.
-		
-		
-		Structure depot = new Structure(nbPatientsInitialDepot,
-											consoPatientDepot, 
-											stockSecuriteDepot, 
-											stockInitialDepot, 
-											lotCommandeDepot, 
-											delaiDepot, 
-											pourcentageFluctuationDepot,
-											duree);
-			
-	
-	// Données Strategie :
-		double pourcentagePassageTotal = 90; //pourcentage à faire passer au nouveau traitement
-		double pourcentagePassageMensuel = 10;
-		int tempsEtapes = 1; // Durée entre chaque étape
-		int nbEtapes = (int)(pourcentagePassageTotal / pourcentagePassageMensuel); // Nombre d'étape pour atteindre le nouvel espacement
-		int nbGroupes = nbEtapes + 1; // nbGroupes = nbEtapes (car 1 étape = 1 mois) + 1 (groupe qui ne change pas de traitement)
-		int moisEspacement = 3;
-		
-		Strategie strategie1 = new Strategie(pourcentagePassageTotal, nbEtapes, tempsEtapes, duree, structure1, moisEspacement);
 		
 		// Ces paramètres strategique determine la demande en medicaments des patients sur les 24 mois
 		int[][] demande = strategie1.getDemande();
@@ -226,9 +146,9 @@ public class premier_modele {
 		int[] demandeMensuelle=new int[duree];
 		
 		int demandeMoisI = 0;
-		for (int i=0; i<duree; i++) {
+		for (int i=0; i<strategie1.duree; i++) {
 			demandeMoisI = 0;
-			for (int j=0; j<nbGroupes; j++) {
+			for (int j=0; j<strategie1.getNbGroupes(); j++) {
 				demandeMoisI += demande[j][i];
 			}
 			demandeMensuelle[i]=demandeMoisI;
@@ -314,11 +234,69 @@ public class premier_modele {
 	        out.close();
 		   */
 	        String nomFichier = "fichier";
-		    creationCsv(nomFichier, delai, stock, duree, commande);
+	        creationCsv(nomFichier, delai, stock, duree, commande);
 		    
 		}else {
 			System.out.println("pas de solution");
 		}
+		
+	}
+	
+	public static void creationCsv(String nomFichier, int delai, IntVar[] stock, int duree, IntVar[] commande) throws IOException {
+		//File ff = new File("D:\\Fichiers\\Documents\\Cours\\A3\\Antiretroviraux\\exportcsv" + nomFichier + ".csv");
+		File ff = new File("C:\\Users\\Lucas\\Documents\\Mines\\A3\\Projet d'Option\\ExportEclipse\\" + nomFichier + ".csv");
+		   PrintWriter out;
+		   out = new PrintWriter(new FileWriter(ff));
+		   out.write("Mois;Stock");
+		   out.println();
+		    
+		   for(int i=0; i<delai; i++) {
+			   out.write(i+1 +";" + stock[i].getValue());
+			   out.println();
+		   }
+	       for (int i =delai; i<duree; i++) {
+	    	   out.write(i+1 + ";" + (stock[i].getValue() + commande[i-delai].getValue()));
+	    	   out.println();
+	       }
+	        out.close();
+	}
+	
+	
+	
+	public static void main(String[] args) throws IOException {
+		
+
+		
+	// Données structure1
+		int nbPatientsInitial = 1000;
+		int consoPatient = 1; // Combien un patient consomme de boite de medicament par mois
+		int stockSecurite=3000;
+		int stockInitial=6000;
+		int duree = 36; // Durée en mois de la simulation
+		int lotCommande=3000; // Combien de boite de medicament arrive par commande
+		int delai = 1; // délai entre le moment ou la commande est passé et le moment ou elle arrive
+		int pourcentageFluctuation=0; // Au mois suivant il y a une proportion aléatoire entre 0 et pourcentageFluctuation de patients de plus ou moins.
+		
+		Structure structure1 = new Structure(nbPatientsInitial,
+											consoPatient, 
+											stockSecurite, 
+											stockInitial, 
+											lotCommande, 
+											delai, 
+											pourcentageFluctuation,
+											duree);		
+	
+	// Données Strategie :
+		double pourcentagePassageTotal = 90; //pourcentage à faire passer au nouveau traitement
+		double pourcentagePassageMensuel = 10;
+		int tempsEtapes = 1; // Durée entre chaque étape
+		int nbEtapes = (int)(pourcentagePassageTotal / pourcentagePassageMensuel); // Nombre d'étape pour atteindre le nouvel espacement
+		int nbGroupes = nbEtapes + 1; // nbGroupes = nbEtapes (car 1 étape = 1 mois) + 1 (groupe qui ne change pas de traitement)
+		int moisEspacement = 3;
+		
+		Strategie strategie1 = new Strategie(pourcentagePassageTotal, nbEtapes, tempsEtapes, duree, structure1, moisEspacement);
+		
+		resoudStock(strategie1);
 		
 		}
 	}
