@@ -151,6 +151,8 @@ public class premier_modele {
 	        out.close();
 	}
 	
+	
+	
 	public static void main(String[] args) throws IOException {
 		
 
@@ -172,48 +174,7 @@ public class premier_modele {
 											lotCommande, 
 											delai, 
 											pourcentageFluctuation,
-											duree);
-	
-	// Données structure2
-			int nbPatientsInitial2 = 1000;
-			int consoPatient2 = 1; // Combien un patient consomme de boite de medicament par mois
-			int stockSecurite2=3000;
-			int stockInitial2=6000;
-			int duree2 = 36; // Durée en mois de la simulation
-			int lotCommande2=3000; // Combien de boite de medicament arrive par commande
-			int delai2 = 1; // délai entre le moment ou la commande est passé et le moment ou elle arrive
-			int pourcentageFluctuation2=0; // Au mois suivant il y a une proportion aléatoire entre 0 et pourcentageFluctuation de patients de plus ou moins.
-			
-			
-			Structure structure2 = new Structure(nbPatientsInitial2,
-												consoPatient2, 
-												stockSecurite2, 
-												stockInitial2, 
-												lotCommande2, 
-												delai2, 
-												pourcentageFluctuation2,
-												duree2);
-	
-			
-		// Données dépot
-		int nbPatientsInitialDepot = nbPatientsInitial+nbPatientsInitial2;
-		int consoPatientDepot = 1; // Combien un patient consomme de boite de medicament par mois
-		int stockSecuriteDepot=3000;
-		int stockInitialDepot=6000;
-		int lotCommandeDepot=3000; // Combien de boite de medicament arrive par commande
-		int delaiDepot = 1; // délai entre le moment ou la commande est passé et le moment ou elle arrive
-		int pourcentageFluctuationDepot=0; // Au mois suivant il y a une proportion aléatoire entre 0 et pourcentageFluctuation de patients de plus ou moins.
-		
-		
-		Structure depot = new Structure(nbPatientsInitialDepot,
-											consoPatientDepot, 
-											stockSecuriteDepot, 
-											stockInitialDepot, 
-											lotCommandeDepot, 
-											delaiDepot, 
-											pourcentageFluctuationDepot,
-											duree);
-			
+											duree);		
 	
 	// Données Strategie :
 		double pourcentagePassageTotal = 90; //pourcentage à faire passer au nouveau traitement
