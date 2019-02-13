@@ -215,25 +215,7 @@ public class premier_modele {
 		    
 		    */
 		    
-		    
-		  /* File ff = new File("C:\\Users\\Lucas\\Documents\\Mines\\A3\\Projet d'Option\\ExportEclipse\\fichier.csv");
-		   PrintWriter out;
-		   out = new PrintWriter(new FileWriter(ff));
-		   String st = "";
-		   out.write("Mois;Stock");
-		   out.println();
-		    
-		   for(int i=0; i<delai; i++) {
-			   out.write(i+1 +";" + stock[i].getValue());
-			   out.println();
-		   }
-	       for (int i =delai; i<duree; i++) {
-	    	   out.write(i+1 + ";" + (stock[i].getValue() + commande[i-delai].getValue()));
-	    	   out.println();
-	       }
-	        out.close();
-		   */
-	        String nomFichier = "fichier";
+	        String nomFichier = "Stock avec la strategie qui a"+strategie1.getNbEtapes()+"Nb Etape";
 	        creationCsv(nomFichier, delai, stock, duree, commande);
 		    
 		}else {
@@ -243,8 +225,8 @@ public class premier_modele {
 	}
 	
 	public static void creationCsv(String nomFichier, int delai, IntVar[] stock, int duree, IntVar[] commande) throws IOException {
-		//File ff = new File("D:\\Fichiers\\Documents\\Cours\\A3\\Antiretroviraux\\exportcsv" + nomFichier + ".csv");
-		File ff = new File("C:\\Users\\Lucas\\Documents\\Mines\\A3\\Projet d'Option\\ExportEclipse\\" + nomFichier + ".csv");
+		File ff = new File("D:\\Fichiers\\Documents\\Cours\\A3\\Antiretroviraux\\exportcsv\\" + nomFichier + ".csv");
+		//File ff = new File("C:\\Users\\Lucas\\Documents\\Mines\\A3\\Projet d'Option\\ExportEclipse\\" + nomFichier + ".csv");
 		   PrintWriter out;
 		   out = new PrintWriter(new FileWriter(ff));
 		   out.write("Mois;Stock");
@@ -286,17 +268,64 @@ public class premier_modele {
 											pourcentageFluctuation,
 											duree);		
 	
-	// Données Strategie :
+	// Données Strategie globale:
 		double pourcentagePassageTotal = 90; //pourcentage à faire passer au nouveau traitement
-		double pourcentagePassageMensuel = 10;
 		int tempsEtapes = 1; // Durée entre chaque étape
-		int nbEtapes = (int)(pourcentagePassageTotal / pourcentagePassageMensuel); // Nombre d'étape pour atteindre le nouvel espacement
-		int nbGroupes = nbEtapes + 1; // nbGroupes = nbEtapes (car 1 étape = 1 mois) + 1 (groupe qui ne change pas de traitement)
-		int moisEspacement = 3;
+	// Données Strategie A
+		int moisEspacementA = 3;
+		double pourcentagePassageMensuelA1 = 5;
+		int nbEtapesA1 = (int)(pourcentagePassageTotal / pourcentagePassageMensuelA1); // Nombre d'étape pour atteindre le nouvel espacement
 		
-		Strategie strategie1 = new Strategie(pourcentagePassageTotal, nbEtapes, tempsEtapes, duree, structure1, moisEspacement);
+		double pourcentagePassageMensuelA2 = 10;
+		int nbEtapesA2 = (int)(pourcentagePassageTotal / pourcentagePassageMensuelA2); // Nombre d'étape pour atteindre le nouvel espacement
 		
-		resoudStock(strategie1);
+		double pourcentagePassageMensuelA3 = 15;
+		int nbEtapesA3 = (int)(pourcentagePassageTotal / pourcentagePassageMensuelA3); // Nombre d'étape pour atteindre le nouvel espacement
+		
+		double pourcentagePassageMensuelA4 = 30;
+		int nbEtapesA4 = (int)(pourcentagePassageTotal / pourcentagePassageMensuelA4); // Nombre d'étape pour atteindre le nouvel espacement
+		
+		Strategie strategieA1 = new Strategie(pourcentagePassageTotal, nbEtapesA1, tempsEtapes, duree, structure1, moisEspacementA);
+		Strategie strategieA2 =  new Strategie(pourcentagePassageTotal, nbEtapesA2, tempsEtapes, duree, structure1, moisEspacementA);
+		Strategie strategieA3 =  new Strategie(pourcentagePassageTotal, nbEtapesA3, tempsEtapes, duree, structure1, moisEspacementA);
+		Strategie strategieA4 =  new Strategie(pourcentagePassageTotal, nbEtapesA4, tempsEtapes, duree, structure1, moisEspacementA);
+		
+	// Données Strategie B
+		int moisEspacementB=6;
+		double pourcentagePassageMensuelB1 = 5;
+		int nbEtapesB1 = (int)(pourcentagePassageTotal / pourcentagePassageMensuelB1); // Nombre d'étape pour atteindre le nouvel espacement
+		
+		double pourcentagePassageMensuelB2 = 10;
+		int nbEtapesB2 = (int)(pourcentagePassageTotal / pourcentagePassageMensuelB2); // Nombre d'étape pour atteindre le nouvel espacement
+		
+		double pourcentagePassageMensuelB3 = 15;
+		int nbEtapesB3 = (int)(pourcentagePassageTotal / pourcentagePassageMensuelB3); // Nombre d'étape pour atteindre le nouvel espacement
+		
+		double pourcentagePassageMensuelB4 = 30;
+		int nbEtapesB4 = (int)(pourcentagePassageTotal / pourcentagePassageMensuelB4); // Nombre d'étape pour atteindre le nouvel espacement
+		
+		Strategie strategieB1 = new Strategie(pourcentagePassageTotal, nbEtapesB1, tempsEtapes, duree, structure1, moisEspacementB);
+		Strategie strategieB2 =  new Strategie(pourcentagePassageTotal, nbEtapesB2, tempsEtapes, duree, structure1, moisEspacementB);
+		Strategie strategieB3 =  new Strategie(pourcentagePassageTotal, nbEtapesB3, tempsEtapes, duree, structure1, moisEspacementB);
+		Strategie strategieB4 =  new Strategie(pourcentagePassageTotal, nbEtapesB4, tempsEtapes, duree, structure1, moisEspacementB);
+		
+		
+		
+		List<Strategie> strategies = new ArrayList<Strategie>();
+		strategies.add(strategieA1);
+		strategies.add(strategieA2);
+		strategies.add(strategieA3);
+		strategies.add(strategieA4);
+		strategies.add(strategieB1);
+		strategies.add(strategieB2);
+		strategies.add(strategieB3);
+		strategies.add(strategieB4);
+		
+		for (Strategie strategie:strategies) {
+			resoudStock(strategie);
+		}
+		
+		
 		
 		}
 	}
