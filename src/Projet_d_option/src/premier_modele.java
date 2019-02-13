@@ -12,7 +12,114 @@ import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 
+import org.javatuples.*;
+
 public class premier_modele {
+	
+	public static List<Quartet<String, Integer, Integer, Integer>> indicateurs(Strategie strategie, IntVar[] stock, IntVar[] commande) {
+		List<Quartet<String, Integer, Integer, Integer>> indic = new ArrayList<Quartet<String, Integer, Integer, Integer>>();
+		
+		indic.add(new Quartet<>("Stock Maximum",0,0,0));
+		indic.add(new Quartet<>("Nombre de Commande pendant la transition", 0, 0, 0));
+		indic.add(new Quartet<>("Duree de la periode", 0, 0, 0));
+		indic.add(new Quartet<>("Somme des Rapports difference(Max-secu) / Duree de la periode", 0, 0, 0));
+		indic.add(new Quartet<>("Frequence des commandes pour nouveau regime", 0, 0, 0));
+		
+		int dateFinTransition = 12+(strategie.getNbEtapes()*strategie.getTempsEtapes());
+		int dureeTotale = strategie.getDuree();
+		int stockSecu = strategie.getStructure().getStockSecurite();
+		
+		// Calcul indicateur Stock Maximal
+		int stockMaxAvant = stock[0].getValue();
+		for (int i = 1; i<12; i++) {
+			if (stock[i].getValue() > stockMaxAvant) {
+				stockMaxAvant = stock[i].getValue();
+			}
+		}
+		
+		int stockMaxPendant = stock[12].getValue();
+		for (int i = 12; i<dateFinTransition + 1; i++) {
+			if (stock[i].getValue() > stockMaxPendant) {
+				stockMaxPendant = stock[i].getValue();
+			}
+		}
+		
+		int stockMaxApres = stock[dateFinTransition + 1].getValue();
+		for (int i = dateFinTransition+1; i<dureeTotale; i++) {
+			if (stock[i].getValue() > stockMaxApres) {
+				stockMaxApres = stock[i].getValue();
+			}
+		}		
+				
+		// Calcul indicateur Nombre de commande
+		int nbCommandeAvant = 0;
+		for (int i = 1; i<12; i++) {
+			if (commande[i].getValue() > 0) {
+				nbCommandeAvant += 1;
+			}
+		}
+		
+		int nbCommandePendant = 0;
+		for (int i = 12; i<dateFinTransition+1; i++) {
+			if (commande[i].getValue() > 0) {
+				nbCommandePendant += 1;
+			}
+		}
+		
+		int nbCommandeApres = 0;
+		for (int i = dateFinTransition+1; i<dureeTotale; i++) {
+			if (commande[i].getValue() > 0) {
+				nbCommandeApres += 1;
+			}
+		}
+		
+		
+		// Calcul indicateur duree de la periode de transition
+		int dureeTransition = strategie.getNbEtapes()*strategie.getTempsEtapes();
+		
+		// Calcul indicateur Differences des stocks et stock Secu
+			// AVANT
+		int dureeAvant = 12;
+		int sommeDesDifferencesAvant = 0;
+		
+		for(int i=0; i<strategie.getStructure().getDelai(); i++) {
+			sommeDesDifferencesAvant += stock[i].getValue()-stockSecu;
+		}
+		
+	    for (int i = strategie.getStructure().getDelai(); i<12; i++) {
+	    	sommeDesDifferencesAvant += stock[i].getValue() + commande[i-strategie.getStructure().getDelai()].getValue() - stockSecu;
+	   	}
+	    
+	    	// PENDANT
+	    int dureePendant = strategie.getNbEtapes()*strategie.getTempsEtapes();
+	    int sommeDesDifferencesPendant = 0;
+		for(int i=12; i<dateFinTransition + 1; i++) {
+			sommeDesDifferencesPendant += stock[i].getValue() + commande[i-strategie.getStructure().getDelai()].getValue() - stockSecu;
+		}
+		
+			// APRES
+		int dureeApres = dureeTotale - dureePendant - dureeAvant; 
+		int sommeDesDifferencesApres = 0;
+	    for (int i = dateFinTransition + 1; i<dureeTotale; i++) {
+	    	sommeDesDifferencesApres += stock[i].getValue() + commande[i-strategie.getStructure().getDelai()].getValue() - stockSecu;
+	   	}
+	    	
+		indic.set(0, new Quartet<>("Stock Maximum", stockMaxAvant, stockMaxPendant, stockMaxApres));
+		indic.set(1, new Quartet<>("Nombre de Commande pendant la periode", nbCommandeAvant, nbCommandePendant, nbCommandeApres));
+		indic.set(2, new Quartet<>("Duree de la periode", dureeAvant, dureePendant, dureeApres));
+		indic.set(3, new Quartet<>("Somme des Rapports difference(Max-secu) / Duree de la periode", (int)((double)(sommeDesDifferencesAvant)/(double)(dureeAvant)), (int)((double)(sommeDesDifferencesPendant)/(double)(dureePendant)), (int)((double)(sommeDesDifferencesApres)/(double)(dureeApres))));
+		indic.set(4, new Quartet<>("Somme des Rapports difference(Max-secu) / Duree de la periode", (int)((double)(nbCommandeAvant)/(double)(dureeAvant)), (int)((double)(nbCommandePendant)/(double)(dureePendant)), (int)((double)(nbCommandeApres)/(double)(dureeApres))));
+		
+		
+		
+		
+		
+		
+		return indic;
+	}
+	
+	
+	
 
 	public static void creationCsv(String nomFichier, int delai, IntVar[] stock, int duree, IntVar[] commande) throws IOException {
 		File ff = new File("C:\\Users\\Lucas\\Documents\\Mines\\A3\\Projet d'Option\\ExportEclipse\\" + nomFichier + ".csv");
@@ -21,7 +128,7 @@ public class premier_modele {
 		   String st = "";
 		   out.write("Mois;Stock");
 		   out.println();
-		    
+		   
 		   for(int i=0; i<delai; i++) {
 			   out.write(i+1 +";" + stock[i].getValue());
 			   out.println();
