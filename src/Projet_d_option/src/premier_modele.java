@@ -156,7 +156,6 @@ public class premier_modele {
 		int lotCommande=strategie.getStructure().getLotCommande();
 		int stockSecurite=strategie.getStructure().getStockSecurite();
 		int stockInitial=strategie.getStructure().getStockInitial();
-		int nbGroupes=strategie.getNbGroupes();
 		
 		// Ces paramètres strategique determine la demande en medicaments des patients sur les 24 mois
 		int[][] demande = strategie.getDemande();
@@ -202,9 +201,9 @@ public class premier_modele {
 			model.scalar(new IntVar[] {stock[i-1],stock[i],commande[i-1-delai]},new int[] {-1,1,-1 },"=", -demandeMensuelle[i-1]).post();
 		}
 		
-		// Resolution et affichage des résultats
+		// Resolution
 		
-		Solution solution = model.getSolver().findSolution();
+		model.getSolver().findSolution();
 		StockCommande.add(stock);
 		StockCommande.add(commande);
 		
@@ -215,9 +214,6 @@ public class premier_modele {
 		
 		int duree=strategie.getStructure().getDuree();
 		int delai=strategie.getStructure().getDelai();
-		int lotCommande=strategie.getStructure().getLotCommande();
-		int stockSecurite=strategie.getStructure().getStockSecurite();
-		int stockInitial=strategie.getStructure().getStockInitial();
 		int nbGroupes=strategie.getNbGroupes();
 		
 		IntVar[] stock=StockCommande.get(0);
@@ -319,8 +315,9 @@ public class premier_modele {
 		Strategie strategieB2 =  new Strategie(pourcentagePassageTotal, nbEtapesB2, tempsEtapes, duree, structure1, moisEspacementB,"strategieB2");
 		Strategie strategieB3 =  new Strategie(pourcentagePassageTotal, nbEtapesB3, tempsEtapes, duree, structure1, moisEspacementB,"strategieB3");
 		Strategie strategieB4 =  new Strategie(pourcentagePassageTotal, nbEtapesB4, tempsEtapes, duree, structure1, moisEspacementB,"strategieB4");
-		
-		
+		// Strategie temoin, on mets simplement le pourcentagePassageTotal à 0
+		int pourcentagePassageTotalNul=0;
+		Strategie strategieTemoin = new Strategie(pourcentagePassageTotalNul, nbEtapesB4, tempsEtapes, duree, structure1, moisEspacementB,"strategieB4");
 		
 		List<Strategie> strategies = new ArrayList<Strategie>();
 		strategies.add(strategieA1);
@@ -331,6 +328,7 @@ public class premier_modele {
 		strategies.add(strategieB2);
 		strategies.add(strategieB3);
 		strategies.add(strategieB4);
+		strategies.add(strategieTemoin);
 		
 		List<IntVar[]> stocks=new ArrayList<IntVar[]>();
 		List<IntVar[]> commandes=new ArrayList<IntVar[]>();
