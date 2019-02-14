@@ -112,8 +112,6 @@ public class premier_modele {
 		return indic;
 	}
 	
-	
-	
 
 	public static void creationCsvIndicateurs(String nomFichier, 
 												List<Strategie> strategies, 
@@ -125,10 +123,13 @@ public class premier_modele {
 		out = new PrintWriter(new FileWriter(ff));
 		out.write("Strategies;");
 		List <Quartet<String, Integer, Integer, Integer>> indicateurs = indicateurs(strategies.get(0), stock, commande);
+		
 		for (Quartet i : indicateurs) {
 			out.write("" + i.getValue(0)+ " avant la transition;"+ i.getValue(0) + " pendant la transition;" + i.getValue(0) + " apres la transition;");
 		}
+		
 		out.println();
+		
 		for (Strategie s : strategies) {
 			indicateurs = indicateurs(s, stock, commande);
 			out.write(s.getNomStrategie());
@@ -160,6 +161,7 @@ public class premier_modele {
 		int nbGroupes=strategie.getNbGroupes();
 		
 		
+		
 		// Ces paramètres strategique determine la demande en medicaments des patients sur les 24 mois
 		int[][] demande = strategie.getDemande();
 		
@@ -175,6 +177,8 @@ public class premier_modele {
 			demandeMensuelle[i]=demandeMoisI;
 		}
 		
+		
+		
 		//Variables 
 		IntVar[] stock = model.intVarArray("stock",duree, 0,100000);
 		
@@ -183,7 +187,7 @@ public class premier_modele {
 		
 		
 		//Contraintes
-
+		
 		// Une commande est lancé dès que le stock passe en dessous du stock de sécurité
 		// Si le stock au mois i est inferieur à lotCommande alors l'appro vaut lot commande sinon elle vaut 0
 			for(int i=0;i<duree-delai;i++) {
@@ -191,7 +195,6 @@ public class premier_modele {
 				BoolVar b2 = model.arithm(commande[i], ">", 0).reify();
 				model.arithm(b1, "=", b2).post();
 			}
-		
 		
 		//Stock initial
 		model.arithm(stock[0], "=", stockInitial).post();
@@ -212,15 +215,10 @@ public class premier_modele {
 		StockCommande.add(stock);
 		StockCommande.add(commande);
 		
-		affichageSolution(solution,StockCommande,strategie);
-		
 		return StockCommande;
-		
-
-		
 	}
 	
-	public static void affichageSolution(Solution solution, List<IntVar[]> StockCommande, Strategie strategie) throws IOException {
+	public static void affichageSolution(List<IntVar[]> StockCommande, Strategie strategie) throws IOException {
 		
 		int duree=strategie.getStructure().getDuree();
 		int delai=strategie.getStructure().getDelai();
@@ -232,9 +230,7 @@ public class premier_modele {
 		IntVar[] stock=StockCommande.get(0);
 		IntVar[] commande=StockCommande.get(1);
 		
-		if(solution != null){
-		    System.out.println(solution.toString());
-		    
+	
 		    
 		    for(int i =0; i < duree-delai; i++) {
 		    	System.out.println("Dispo au mois " + i + " :" + (stock[i+delai].getValue() + commande[i].getValue()));
@@ -261,12 +257,6 @@ public class premier_modele {
 
 		    
 		 
-	        String nomFichier = "stock"+strategie.getNomStrategie();
-	        creationCsv(nomFichier, delai, stock, duree, commande);
-		    
-		}else {
-			System.out.println("pas de solution");
-		}
 		
 	}
 	
@@ -368,7 +358,13 @@ public class premier_modele {
 		strategies.add(strategieB4);
 		
 		for (Strategie strategie:strategies) {
-			resoudStock(strategie);
+			
+			List<IntVar[]> StockCommande = resoudStock(strategie);
+			IntVar[] stock = StockCommande.get(0);
+			IntVar[] commande = StockCommande.get(1);
+		    String nomFichier = "stock"+strategie.getNomStrategie();
+		    affichageSolution(StockCommande,strategie);
+		    creationCsv(nomFichier, delai, stock, duree, commande);
 		}
 		
 
