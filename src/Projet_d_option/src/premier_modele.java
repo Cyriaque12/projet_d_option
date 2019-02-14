@@ -177,8 +177,6 @@ public class premier_modele {
 			demandeMensuelle[i]=demandeMoisI;
 		}
 		
-		
-		
 		//Variables 
 		IntVar[] stock = model.intVarArray("stock",duree, 0,100000);
 		
@@ -230,7 +228,6 @@ public class premier_modele {
 		IntVar[] stock=StockCommande.get(0);
 		IntVar[] commande=StockCommande.get(1);
 		
-	
 		    
 		    for(int i =0; i < duree-delai; i++) {
 		    	System.out.println("Dispo au mois " + i + " :" + (stock[i+delai].getValue() + commande[i].getValue()));
@@ -255,9 +252,6 @@ public class premier_modele {
 		    
 		    */
 
-		    
-		 
-		
 	}
 	
 	public static void creationCsv(String nomFichier, int delai, IntVar[] stock, int duree, IntVar[] commande) throws IOException {
@@ -282,8 +276,6 @@ public class premier_modele {
 	
 	
 	public static void main(String[] args) throws IOException {
-		
-
 		
 	// Données structure1
 		int nbPatientsInitial = 1000;
@@ -362,7 +354,8 @@ public class premier_modele {
 			List<IntVar[]> StockCommande = resoudStock(strategie);
 			IntVar[] stock = StockCommande.get(0);
 			IntVar[] commande = StockCommande.get(1);
-		    String nomFichier = "stock"+strategie.getNomStrategie();
+			
+		    String nomFichier = "stock de la strategie "+strategie.getNomStrategie();
 		    affichageSolution(StockCommande,strategie);
 		    creationCsv(nomFichier, delai, stock, duree, commande);
 		}
