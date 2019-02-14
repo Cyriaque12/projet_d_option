@@ -2,7 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="D:/Library java/choco-4.10.0/choco-solver-4.10.0.jar"/>
-	<classpathentry kind="lib" path="D:/Library java/javatuples-1.2/lib/javatuples-1.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Lucas/Documents/Mines/A3/Projet d&apos;Option/choco/javatuples-1.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Lucas/Documents/Mines/A3/Projet d&apos;Option/choco/choco-4.10.0/choco-solver-4.10.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Lucas/Documents/Mines/A3/Projet d&apos;Option/choco/choco-4.10.0/choco-solver-4.10.0-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

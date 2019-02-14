@@ -261,19 +261,19 @@ public class premier_modele {
 	}
 	
 	public static void creationCsv(String nomFichier, int delai, IntVar[] stock, int duree, IntVar[] commande) throws IOException {
-		File ff = new File("D:\\Fichiers\\Documents\\Cours\\A3\\Antiretroviraux\\exportcsv\\" + nomFichier + ".csv");
-		//File ff = new File("C:\\Users\\Lucas\\Documents\\Mines\\A3\\Projet d'Option\\ExportEclipse\\" + nomFichier + ".csv");
+		//File ff = new File("D:\\Fichiers\\Documents\\Cours\\A3\\Antiretroviraux\\exportcsv\\" + nomFichier + ".csv");
+		File ff = new File("C:\\Users\\Lucas\\Documents\\Mines\\A3\\Projet d'Option\\ExportEclipse\\" + nomFichier + ".csv");
 		   PrintWriter out;
 		   out = new PrintWriter(new FileWriter(ff));
-		   out.write("Mois;Stock");
+		   out.write("Mois;Stock;Commande à passer");
 		   out.println();
 		    
 		   for(int i=0; i<delai; i++) {
-			   out.write(i+1 +";" + stock[i].getValue());
+			   out.write(i+1 +";" + stock[i].getValue() + ";" + commande[i].getValue());
 			   out.println();
 		   }
 	       for (int i =delai; i<duree; i++) {
-	    	   out.write(i+1 + ";" + (stock[i].getValue() + commande[i-delai].getValue()));
+	    	   out.write(i+1 + ";" + (stock[i].getValue() + commande[i-delai].getValue() + ";" + commande[i].getValue()));
 	    	   out.println();
 	       }
 	        out.close();
@@ -321,10 +321,10 @@ public class premier_modele {
 		double pourcentagePassageMensuelA4 = 30;
 		int nbEtapesA4 = (int)(pourcentagePassageTotal / pourcentagePassageMensuelA4); // Nombre d'étape pour atteindre le nouvel espacement
 		
-		Strategie strategieA1 = new Strategie(pourcentagePassageTotal, nbEtapesA1, tempsEtapes, duree, structure1, moisEspacementA,"strategieA1");
-		Strategie strategieA2 =  new Strategie(pourcentagePassageTotal, nbEtapesA2, tempsEtapes, duree, structure1, moisEspacementA,"strategieA2");
-		Strategie strategieA3 =  new Strategie(pourcentagePassageTotal, nbEtapesA3, tempsEtapes, duree, structure1, moisEspacementA,"strategieA3");
-		Strategie strategieA4 =  new Strategie(pourcentagePassageTotal, nbEtapesA4, tempsEtapes, duree, structure1, moisEspacementA,"strategieA4");
+		Strategie strategieA1 = new Strategie(pourcentagePassageTotal, nbEtapesA1, tempsEtapes, duree, structure1, moisEspacementA,"StrategieA1");
+		Strategie strategieA2 =  new Strategie(pourcentagePassageTotal, nbEtapesA2, tempsEtapes, duree, structure1, moisEspacementA,"StrategieA2");
+		Strategie strategieA3 =  new Strategie(pourcentagePassageTotal, nbEtapesA3, tempsEtapes, duree, structure1, moisEspacementA,"StrategieA3");
+		Strategie strategieA4 =  new Strategie(pourcentagePassageTotal, nbEtapesA4, tempsEtapes, duree, structure1, moisEspacementA,"StrategieA4");
 		
 	// Données Strategie B
 		int moisEspacementB=6;
@@ -340,10 +340,10 @@ public class premier_modele {
 		double pourcentagePassageMensuelB4 = 30;
 		int nbEtapesB4 = (int)(pourcentagePassageTotal / pourcentagePassageMensuelB4); // Nombre d'étape pour atteindre le nouvel espacement
 		
-		Strategie strategieB1 = new Strategie(pourcentagePassageTotal, nbEtapesB1, tempsEtapes, duree, structure1, moisEspacementB,"strategieB1");
-		Strategie strategieB2 =  new Strategie(pourcentagePassageTotal, nbEtapesB2, tempsEtapes, duree, structure1, moisEspacementB,"strategieB2");
-		Strategie strategieB3 =  new Strategie(pourcentagePassageTotal, nbEtapesB3, tempsEtapes, duree, structure1, moisEspacementB,"strategieB3");
-		Strategie strategieB4 =  new Strategie(pourcentagePassageTotal, nbEtapesB4, tempsEtapes, duree, structure1, moisEspacementB,"strategieB4");
+		Strategie strategieB1 = new Strategie(pourcentagePassageTotal, nbEtapesB1, tempsEtapes, duree, structure1, moisEspacementB,"StrategieB1");
+		Strategie strategieB2 =  new Strategie(pourcentagePassageTotal, nbEtapesB2, tempsEtapes, duree, structure1, moisEspacementB,"StrategieB2");
+		Strategie strategieB3 =  new Strategie(pourcentagePassageTotal, nbEtapesB3, tempsEtapes, duree, structure1, moisEspacementB,"StrategieB3");
+		Strategie strategieB4 =  new Strategie(pourcentagePassageTotal, nbEtapesB4, tempsEtapes, duree, structure1, moisEspacementB,"StrategieB4");
 		
 		
 		
@@ -357,12 +357,14 @@ public class premier_modele {
 		strategies.add(strategieB3);
 		strategies.add(strategieB4);
 		
+		
+		
 		for (Strategie strategie:strategies) {
 			
 			List<IntVar[]> StockCommande = resoudStock(strategie);
 			IntVar[] stock = StockCommande.get(0);
 			IntVar[] commande = StockCommande.get(1);
-		    String nomFichier = "stock"+strategie.getNomStrategie();
+		    String nomFichier = "StockCommande"+strategie.getNomStrategie();
 		    affichageSolution(StockCommande,strategie);
 		    creationCsv(nomFichier, delai, stock, duree, commande);
 		}
