@@ -28,26 +28,34 @@ public class premier_modele {
 		int dateFinTransition = 12+(strategie.getNbEtapes()*strategie.getTempsEtapes());
 		int dureeTotale = strategie.getDuree();
 		int stockSecu = strategie.getStructure().getStockSecurite();
+		int delai = strategie.getStructure().getDelai();
 		
 		// Calcul indicateur Stock Maximal
 		int stockMaxAvant = stock[0].getValue();
-		for (int i = 1; i<12; i++) {
+		
+		for (int i = 1; i<delai; i++) {
 			if (stock[i].getValue() > stockMaxAvant) {
 				stockMaxAvant = stock[i].getValue();
 			}
 		}
 		
+		for (int i = delai; i<12; i++) {
+			if (stock[i].getValue()+commande[i-delai].getValue() > stockMaxAvant) {
+				stockMaxAvant = stock[i].getValue() + commande[i-delai].getValue();
+			}
+		}
+		
 		int stockMaxPendant = stock[12].getValue();
 		for (int i = 12; i<dateFinTransition + 1; i++) {
-			if (stock[i].getValue() > stockMaxPendant) {
-				stockMaxPendant = stock[i].getValue();
+			if (stock[i].getValue()+commande[i-delai].getValue() > stockMaxPendant) {
+				stockMaxPendant = stock[i].getValue() + commande[i-delai].getValue();
 			}
 		}
 		
 		int stockMaxApres = stock[dateFinTransition + 1].getValue();
 		for (int i = dateFinTransition+1; i<dureeTotale; i++) {
-			if (stock[i].getValue() > stockMaxApres) {
-				stockMaxApres = stock[i].getValue();
+			if (stock[i].getValue()+commande[i-delai].getValue() > stockMaxApres) {
+				stockMaxApres = stock[i].getValue() + commande[i-delai].getValue();
 			}
 		}		
 				
@@ -77,6 +85,8 @@ public class premier_modele {
 		// Calcul indicateur duree de la periode de transition
 		int dureeTransition = strategie.getNbEtapes()*strategie.getTempsEtapes();
 		
+		
+		
 		// Calcul indicateur Differences des stocks et stock Secu
 			// AVANT
 		int dureeAvant = 12;
@@ -104,10 +114,10 @@ public class premier_modele {
 	   	}
 	    	
 		indic.set(0, new Quartet<>("Stock Maximum", stockMaxAvant, stockMaxPendant, stockMaxApres));
-		indic.set(1, new Quartet<>("Nombre de Commande pendant la periode", nbCommandeAvant, nbCommandePendant, nbCommandeApres));
+		indic.set(1, new Quartet<>("Nombre de Commande", nbCommandeAvant, nbCommandePendant, nbCommandeApres));
 		indic.set(2, new Quartet<>("Duree de la periode", dureeAvant, dureeTransition, dureeApres));
-		indic.set(3, new Quartet<>("Somme des Rapports difference(Max-secu) / Duree de la periode", (int)((double)(sommeDesDifferencesAvant)/(double)(dureeAvant)), (int)((double)(sommeDesDifferencesPendant)/(double)(dureeTransition)), (int)((double)(sommeDesDifferencesApres)/(double)(dureeApres))));
-		indic.set(4, new Quartet<>("Somme des Rapports difference(Max-secu) / Duree de la periode", (int)((double)(nbCommandeAvant)/(double)(dureeAvant)), (int)((double)(nbCommandePendant)/(double)(dureeTransition)), (int)((double)(nbCommandeApres)/(double)(dureeApres))));		
+		indic.set(3, new Quartet<>("Somme des Rapports difference(Stock-secu) / Duree de la periode", (int)((double)(sommeDesDifferencesAvant)/(double)(dureeAvant)), (int)((double)(sommeDesDifferencesPendant)/(double)(dureeTransition)), (int)((double)(sommeDesDifferencesApres)/(double)(dureeApres))));
+		//indic.set(4, new Quartet<>("Frequence des commandes sur la periode", (int)(100.0*(double)(nbCommandeAvant)/(double)(dureeAvant)), (int)(100.0*(double)(nbCommandePendant)/(double)(dureeTransition)), (int)(100.0*(double)(nbCommandeApres)/(double)(dureeApres))));		
 		
 		return indic;
 	}
@@ -115,34 +125,35 @@ public class premier_modele {
 
 	public static void creationCsvIndicateurs(String nomFichier, 
 												List<Strategie> strategies, 
-												IntVar[] stock,  
-												IntVar[] commande) throws IOException {
+												List<IntVar[]> stocks,  
+												List<IntVar[]> commandes) throws IOException {
 		
 		File ff = new File("C:\\Users\\Lucas\\Documents\\Mines\\A3\\Projet d'Option\\ExportEclipse\\" + nomFichier + ".csv");
 		PrintWriter out;
 		out = new PrintWriter(new FileWriter(ff));
 		out.write("Strategies;");
-		List <Quartet<String, Integer, Integer, Integer>> indicateurs = indicateurs(strategies.get(0), stock, commande);
+		List <Quartet<String, Integer, Integer, Integer>> indicateurs = indicateurs(strategies.get(0), stocks.get(0), commandes.get(0));
 		
 		for (Quartet i : indicateurs) {
-			out.write("" + i.getValue(0)+ " avant la transition;"+ i.getValue(0) + " pendant la transition;" + i.getValue(0) + " apres la transition;");
+			out.write("" + i.getValue(0)+ " avant transition;"+ i.getValue(0) + " en transition;" + i.getValue(0) + " apres transition;");
 		}
 		
 		out.println();
-		
+		int k = 0;
 		for (Strategie s : strategies) {
-			indicateurs = indicateurs(s, stock, commande);
-			out.write(s.getNomStrategie());
+			indicateurs = indicateurs(s, stocks.get(k), commandes.get(k));
+			out.write(s.getNomStrategie() + ";");
+			
 			
 			for (Quartet i : indicateurs) {
 				for (int index = 1; index < i.getSize(); index ++) {
-					out.write("" + i.getValue(index) + ";");
+						out.write("" + i.getValue(index) + ";");
 				}
+				
 			}
 			out.println();
+			k+=1;
 		}
-			
-			
 			out.println();
 			out.close();
 	}
@@ -160,8 +171,6 @@ public class premier_modele {
 		int stockInitial=strategie.getStructure().getStockInitial();
 		int nbGroupes=strategie.getNbGroupes();
 		
-		
-		
 		// Ces paramètres strategique determine la demande en medicaments des patients sur les 24 mois
 		int[][] demande = strategie.getDemande();
 		
@@ -176,8 +185,6 @@ public class premier_modele {
 			}
 			demandeMensuelle[i]=demandeMoisI;
 		}
-		
-		
 		
 		//Variables 
 		IntVar[] stock = model.intVarArray("stock",duree, 0,100000);
@@ -208,7 +215,6 @@ public class premier_modele {
 			model.scalar(new IntVar[] {stock[i-1],stock[i],commande[i-1-delai]},new int[] {-1,1,-1 },"=", -demandeMensuelle[i-1]).post();
 		}
 		
-		
 		// Resolution et affichage des résultats
 		
 		Solution solution = model.getSolver().findSolution();
@@ -219,7 +225,7 @@ public class premier_modele {
 	}
 	
 	public static void affichageSolution(List<IntVar[]> StockCommande, Strategie strategie) throws IOException {
-		
+		System.out.println(strategie.getNomStrategie());
 		int duree=strategie.getStructure().getDuree();
 		int delai=strategie.getStructure().getDelai();
 		int lotCommande=strategie.getStructure().getLotCommande();
@@ -230,34 +236,25 @@ public class premier_modele {
 		IntVar[] stock=StockCommande.get(0);
 		IntVar[] commande=StockCommande.get(1);
 		
-	
-		    
-		    for(int i =0; i < duree-delai; i++) {
-		    	System.out.println("Dispo au mois " + i + " :" + (stock[i+delai].getValue() + commande[i].getValue()));
-		    }		    
-		    System.out.println("");
-		    System.out.println("");
-		    
-		    for (int j=0; j<nbGroupes; j++) {
-		    	for(int i =0; i < stock.length; i++) {
-		    		System.out.print(strategie.getDemande()[j][i] + "    ");
-		    	}
-		    	System.out.println("");		    
-		    }
-		    
-		    /* Tests
-		    System.out.println(moisEspacement * (int)((1-(pourcentagePassageTotal/100))*(double)(structure1.getNbPatients()[3]*structure1.getConsoPatient())/(nbGroupes-1)));
-		    System.out.println(moisEspacement);
-		    System.out.println((pourcentagePassageTotal/100));
-		    System.out.println(structure1.getNbPatients()[3]);
-		    System.out.println(structure1.getConsoPatient());
-		    System.out.println(structure1.getNbPatients()[3]*structure1.getConsoPatient()/(nbGroupes-1));
-		    
-		    */
-
-		    
-		 
-		
+	    
+	    for(int i =0; i < delai; i++) {
+	    	System.out.println("Dispo au mois " + (i+1) + " :" + (stock[i].getValue()));
+	    }		    
+	    
+	    for(int i =delai; i < duree; i++) {
+	    	System.out.println("Dispo au mois " + (i+1) + " :" + (stock[i].getValue() + commande[i-delai].getValue()));
+	    }		
+	    
+	    
+	    System.out.println("");
+	    System.out.println("");
+	    
+	    for (int j=0; j<nbGroupes; j++) {
+	    	for(int i =0; i < stock.length; i++) {
+	    		System.out.print(strategie.getDemande()[j][i] + "    ");
+	    	}
+	    	System.out.println("");		    
+	    }
 	}
 	
 	public static void creationCsv(String nomFichier, int delai, IntVar[] stock, int duree, IntVar[] commande) throws IOException {
@@ -280,19 +277,16 @@ public class premier_modele {
 	}
 	
 	
-	
 	public static void main(String[] args) throws IOException {
-		
-
 		
 	// Données structure1
 		int nbPatientsInitial = 1000;
 		int consoPatient = 1; // Combien un patient consomme de boite de medicament par mois
 		int stockSecurite=3000;
-		int stockInitial=6000;
+		int stockInitial=5000;
 		int duree = 36; // Durée en mois de la simulation
 		int lotCommande=3000; // Combien de boite de medicament arrive par commande
-		int delai = 1; // délai entre le moment ou la commande est passé et le moment ou elle arrive
+		int delai = 0; // délai entre le moment ou la commande est passé et le moment ou elle arrive
 		int pourcentageFluctuation=0; // Au mois suivant il y a une proportion aléatoire entre 0 et pourcentageFluctuation de patients de plus ou moins.
 		
 		Structure structure1 = new Structure(nbPatientsInitial,
@@ -357,17 +351,26 @@ public class premier_modele {
 		strategies.add(strategieB3);
 		strategies.add(strategieB4);
 		
-		
+
+		List<IntVar[]> stocks=new ArrayList<IntVar[]>();
+		List<IntVar[]> commandes=new ArrayList<IntVar[]>();
 		
 		for (Strategie strategie:strategies) {
 			
 			List<IntVar[]> StockCommande = resoudStock(strategie);
+			
 			IntVar[] stock = StockCommande.get(0);
+			stocks.add(stock);
 			IntVar[] commande = StockCommande.get(1);
 		    String nomFichier = "StockCommande"+strategie.getNomStrategie();
+			commandes.add(commande);
 		    affichageSolution(StockCommande,strategie);
 		    creationCsv(nomFichier, delai, stock, duree, commande);
 		}
+		
+		String nomFichierIndicateurs = "IndicateursStrategies";
+	    creationCsvIndicateurs(nomFichierIndicateurs, strategies, stocks, commandes);
+		
 		
 
 		
